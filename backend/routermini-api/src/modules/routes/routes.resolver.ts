@@ -1,0 +1,20 @@
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CalculateRouteInput } from './dto/calculate-route.input';
+import { CalculatedRouteType } from './graphql/calculated-route.type';
+import { RoutesService } from './routes.service';
+
+@Resolver()
+export class RoutesResolver {
+  constructor(private readonly routesService: RoutesService) {}
+
+  @Query(() => String)
+  health(): string {
+    return this.routesService.health();
+  }
+
+  @Mutation(() => CalculatedRouteType)
+  calculateRoute(@Args('input') input: CalculateRouteInput): Promise<CalculatedRouteType> {
+    return this.routesService.calculateRoute(input);
+  }
+
+}

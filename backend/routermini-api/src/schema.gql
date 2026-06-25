@@ -1,0 +1,31 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type RoutePointType {
+  sequence: Int!
+  lat: Float!
+  lng: Float!
+}
+
+type CalculatedRouteType {
+  originAddress: String!
+  destinationAddress: String!
+  distanceKm: Float!
+  durationText: String!
+  encodedPolyline: String!
+  points: [RoutePointType!]!
+}
+
+type Query {
+  health: String!
+}
+
+type Mutation {
+  calculateRoute(input: CalculateRouteInput!): CalculatedRouteType!
+}
+
+input CalculateRouteInput {
+  originAddress: String!
+  destinationAddress: String!
+}

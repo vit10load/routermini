@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CalculateRouteInput } from './dto/calculate-route.input';
-import { CalculatedRouteType } from './graphql/calculated-route.type';
-import { GoogleMapsService } from './services/google-maps.service';
+import { CalculateRouteInput } from './graphql/inputs/calculate-route.input';
+import { CalculatedRouteType } from './graphql/types/calculated-route.type';
+import { GoogleMapsService } from './gateways/google-maps.gateway';
 
 @Injectable()
 export class RoutesService {
 
   constructor(private readonly googleMapsService: GoogleMapsService) {
-    
+
   }
 
   health(): string {

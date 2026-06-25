@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoutesResolver } from './routes.resolver';
+import { RoutesResolver } from './graphql/resolvers/routes.resolver';
 
 describe('RoutesResolver', () => {
   let resolver: RoutesResolver;

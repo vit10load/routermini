@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CalculateRouteInput } from './dto/calculate-route.input';
-import { CalculatedRouteType } from './graphql/calculated-route.type';
-import { RoutesService } from './routes.service';
+import { CalculateRouteInput } from '../inputs/calculate-route.input';
+import { CalculatedRouteType } from '../types/calculated-route.type';
+import { RoutesService } from '../../routes.service';
 
 @Resolver()
 export class RoutesResolver {

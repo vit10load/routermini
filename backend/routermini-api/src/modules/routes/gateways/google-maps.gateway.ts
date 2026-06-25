@@ -2,8 +2,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as polyline from '@mapbox/polyline';
-import { CalculateRouteInput } from '../dto/calculate-route.input';
-import { CalculatedRouteType } from '../graphql/calculated-route.type';
+import { CalculateRouteInput } from '../graphql/inputs/calculate-route.input';
+import { CalculatedRouteType } from '../graphql/types/calculated-route.type';
 
 @Injectable()
 export class GoogleMapsService {

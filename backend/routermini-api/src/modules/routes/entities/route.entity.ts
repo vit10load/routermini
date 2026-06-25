@@ -27,6 +27,7 @@ export class RouteEntity {
 
   @Column({ type: 'jsonb' })
   points: Array<{
+    sequence: number;
     lat: number;
     lng: number;
   }>;

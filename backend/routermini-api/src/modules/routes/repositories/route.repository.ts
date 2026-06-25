@@ -13,42 +13,45 @@ export class RouteRepository {
   ) {}
 
   async saveRoute(input: SaveRouteInput): Promise<RouteEntity> {
-    const lineString = input.points
-      .map((point) => `${point.lng} ${point.lat}`)
-      .join(',');
+  const orderedPoints = input.points
+    .sort((a, b) => a.sequence - b.sequence);
 
-    const result = await this.dataSource.query(
-      `
-      INSERT INTO routes
-      (
-        "originAddress",
-        "destinationAddress",
-        "distanceKm",
-        "durationText",
-        points,
-        path
-      )
-      VALUES
-      (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5,
-        ST_GeogFromText($6)
-      )
-      RETURNING *;
-      `,
-      [
-        input.originAddress,
-        input.destinationAddress,
-        input.distanceKm,
-        input.durationText,
-        JSON.stringify(input.points),
-        `LINESTRING(${lineString})`,
-      ],
-    );
+  const lineString = orderedPoints
+    .map((point) => `${point.lng} ${point.lat}`)
+    .join(',');
 
-    return result[0];
-  }
+  const result = await this.dataSource.query(
+    `
+    INSERT INTO routes
+    (
+      "originAddress",
+      "destinationAddress",
+      "distanceKm",
+      "durationText",
+      points,
+      path
+    )
+    VALUES
+    (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      ST_GeogFromText($6)
+    )
+    RETURNING *;
+    `,
+    [
+      input.originAddress,
+      input.destinationAddress,
+      input.distanceKm,
+      input.durationText,
+      JSON.stringify(orderedPoints),
+      `LINESTRING(${lineString})`,
+    ],
+  );
+
+  return result[0];
+}
 }

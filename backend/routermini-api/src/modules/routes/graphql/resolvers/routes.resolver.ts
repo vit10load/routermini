@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CalculateRouteInput } from '../inputs/calculate-route.input';
 import { CalculatedRouteType } from '../types/calculated-route.type';
+import { SaveRouteInput } from '../inputs/save-route.input';
+import { RouteType } from '../types/route.type';
 import { RoutesService } from '../../routes.service';
 
 @Resolver()
@@ -13,8 +15,14 @@ export class RoutesResolver {
   }
 
   @Mutation(() => CalculatedRouteType)
-  calculateRoute(@Args('input') input: CalculateRouteInput): Promise<CalculatedRouteType> {
+  calculateRoute(
+    @Args('input') input: CalculateRouteInput,
+  ): Promise<CalculatedRouteType> {
     return this.routesService.calculateRoute(input);
   }
 
+  @Mutation(() => RouteType)
+  saveRoute(@Args('input') input: SaveRouteInput): Promise<RouteType> {
+    return this.routesService.saveRoute(input);
+  }
 }

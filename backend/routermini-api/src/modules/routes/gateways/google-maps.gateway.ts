@@ -6,7 +6,7 @@ import { CalculateRouteInput } from '../graphql/inputs/calculate-route.input';
 import { CalculatedRouteType } from '../graphql/types/calculated-route.type';
 
 @Injectable()
-export class GoogleMapsService {
+export class GoogleMapsGateWay {
   constructor(private readonly configService: ConfigService) {}
 
   async calculateRoute(input: CalculateRouteInput): Promise<CalculatedRouteType> {

@@ -153,6 +153,11 @@ button:disabled {
   font-weight: 700;
 }
 
+.success {
+  color: #16a34a;
+  font-weight: 800;
+}
+
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr;

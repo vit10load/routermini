@@ -16,3 +16,12 @@ export interface CalculatedRoute {
 export interface CalculateRouteResponse {
   calculateRoute: CalculatedRoute;
 }
+
+export interface SavedRoute extends CalculatedRoute {
+  id: string;
+  createdAt: string;
+}
+
+export interface SaveRouteResponse {
+  saveRoute: SavedRoute;
+}

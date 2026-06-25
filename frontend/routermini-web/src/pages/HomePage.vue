@@ -52,9 +52,11 @@
             <strong>{{ calculatedRoute.points.length }}</strong>
           </div>
 
-          <button type="button" class="secondary-button">
-            Salvar rota
+          <button type="button" class="secondary-button" :disabled="saving" @click="saveRoute">
+            {{ saving ? 'Salvando...' : 'Salvar rota' }}
           </button>
+
+         <p v-if="successMessage" class="success">{{ successMessage }}</p>
         </section>
       </aside>
 
@@ -66,43 +68,76 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useMutation } from '@vue/apollo-composable';
-import RouteMap from '../components/route/RouteMap.vue';
-import { CALCULATE_ROUTE_MUTATION } from '../graphql/mutations/calculateRoute';
-import type { CalculatedRoute, CalculateRouteResponse } from '../types/route';
+    import { computed, ref } from 'vue';
+    import { useMutation } from '@vue/apollo-composable';
+    import RouteMap from '../components/route/RouteMap.vue';
+    import { CALCULATE_ROUTE_MUTATION } from '../graphql/mutations/calculateRoute';
+    import type { CalculatedRoute, CalculateRouteResponse } from '../types/route';
 
-const originAddress = ref('');
-const destinationAddress = ref('');
-const calculatedRoute = ref<CalculatedRoute | null>(null);
-const errorMessage = ref('');
+    import { SAVE_ROUTE_MUTATION } from '../graphql/mutations/saveRoute';
+    import type { SaveRouteResponse } from '../types/route';
 
-const { mutate, loading } = useMutation<CalculateRouteResponse>(
-  CALCULATE_ROUTE_MUTATION,
-);
+    const originAddress = ref('');
+    const destinationAddress = ref('');
+    const calculatedRoute = ref<CalculatedRoute | null>(null);
+    const errorMessage = ref('');
 
-const canCalculate = computed(
-  () => originAddress.value.trim() && destinationAddress.value.trim(),
-);
+    const { mutate: saveRouteMutation, loading: saving } =
+    useMutation<SaveRouteResponse>(SAVE_ROUTE_MUTATION);
 
-async function calculateRoute() {
-  errorMessage.value = '';
-  calculatedRoute.value = null;
+    const successMessage = ref('');
 
-  if (!canCalculate.value) {
-    errorMessage.value = 'Informe o endereço de coleta e entrega.';
-    return;
-  }
+    const canCalculate = computed(() => originAddress.value.trim() && destinationAddress.value.trim(),);
 
-  const result = await mutate({
-    input: {
-      originAddress: originAddress.value,
-      destinationAddress: destinationAddress.value,
-    },
-  });
 
-  if (result?.data?.calculateRoute) {
-    calculatedRoute.value = result.data.calculateRoute;
-  }
-}
+    const { mutate, loading } = useMutation<CalculateRouteResponse>(
+        CALCULATE_ROUTE_MUTATION,
+    );
+
+    async function calculateRoute() {
+        errorMessage.value = '';
+        successMessage.value = '';
+        calculatedRoute.value = null;
+
+        if (!canCalculate.value) {
+            errorMessage.value = 'Informe o endereço de coleta e entrega.';
+            return;
+        }
+
+        const result = await mutate({
+            input: {
+            originAddress: originAddress.value,
+            destinationAddress: destinationAddress.value,
+            },
+        });
+
+        if (result?.data?.calculateRoute) {
+            calculatedRoute.value = result.data.calculateRoute;
+        }
+    }
+
+    async function saveRoute() {
+        if (!calculatedRoute.value) return;
+
+        successMessage.value = '';
+        errorMessage.value = '';
+
+        const result = await saveRouteMutation({
+            input: {
+                originAddress: calculatedRoute.value.originAddress,
+                destinationAddress: calculatedRoute.value.destinationAddress,
+                distanceKm: calculatedRoute.value.distanceKm,
+                durationText: calculatedRoute.value.durationText,
+                points: calculatedRoute.value.points.map((point) => ({
+                    sequence: point.sequence,
+                    lat: point.lat,
+                    lng: point.lng,
+                })),
+            },
+        });
+
+        if (result?.data?.saveRoute) {
+            successMessage.value = 'Rota salva com sucesso.';
+        }
+    }
 </script>

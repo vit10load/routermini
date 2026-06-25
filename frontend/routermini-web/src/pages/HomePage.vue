@@ -36,6 +36,10 @@
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </form>
 
+        <RouterLink class="secondary-button" to="/routes">
+            Ver rotas salvas
+        </RouterLink>
+
         <section v-if="calculatedRoute" class="route-summary">
           <div class="summary-item">
             <span>Distância</span>
@@ -76,11 +80,13 @@
 
     import { SAVE_ROUTE_MUTATION } from '../graphql/mutations/saveRoute';
     import type { SaveRouteResponse } from '../types/route';
+    import { useRouter } from 'vue-router';
 
     const originAddress = ref('');
     const destinationAddress = ref('');
     const calculatedRoute = ref<CalculatedRoute | null>(null);
     const errorMessage = ref('');
+    const router = useRouter();
 
     const { mutate: saveRouteMutation, loading: saving } =
     useMutation<SaveRouteResponse>(SAVE_ROUTE_MUTATION);
@@ -138,6 +144,7 @@
 
         if (result?.data?.saveRoute) {
             successMessage.value = 'Rota salva com sucesso.';
+            router.push('/routes');
         }
     }
 </script>

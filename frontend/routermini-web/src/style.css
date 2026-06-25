@@ -104,9 +104,20 @@ button:disabled {
 }
 
 .secondary-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   width: 100%;
-  margin-top: 8px;
+  margin-top: 10px;
+
+  text-decoration: none;
   background: #0f172a;
+  color: white;
+
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 800;
 }
 
 .secondary-button:hover {
@@ -213,4 +224,57 @@ button:disabled {
   .saved-layout {
     grid-template-columns: 1fr;
   }
+}
+
+/* Custom styles for the Google Maps API elements  saved routes */
+
+.route-list-item.active {
+  background: #dbeafe;
+  border-color: #2563eb;
+}
+
+.route-detail {
+  padding: 12px;
+}
+
+.selected-info {
+  padding: 14px 14px 20px;
+}
+
+.selected-info h2 {
+  font-size: 1.2rem;
+}
+
+.selected-info p {
+  margin-top: 4px;
+  color: #64748b;
+}
+
+.detail-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.detail-grid div {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.detail-grid span {
+  display: block;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.detail-grid strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.header-link {
+  width: fit-content;
+  margin-top: 16px;
 }

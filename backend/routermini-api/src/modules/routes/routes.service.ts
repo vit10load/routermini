@@ -24,4 +24,12 @@ export class RoutesService {
   saveRoute(input: SaveRouteInput): Promise<RouteType> {
     return this.routeRepository.saveRoute(input);
   }
+
+  findAll(): Promise<RouteType[]> {
+    return this.routeRepository.findAll();
+  }
+
+  findById(id: string): Promise<RouteType | null> {
+    return this.routeRepository.findById(id);
+  }
 }

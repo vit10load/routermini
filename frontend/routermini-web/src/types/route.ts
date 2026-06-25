@@ -25,3 +25,7 @@ export interface SavedRoute extends CalculatedRoute {
 export interface SaveRouteResponse {
   saveRoute: SavedRoute;
 }
+
+export interface RoutesResponse {
+  routes: SavedRoute[];
+}

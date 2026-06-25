@@ -54,4 +54,19 @@ export class RouteRepository {
 
   return result[0];
 }
+
+async findAll(): Promise<RouteEntity[]> {
+  return this.repository.find({
+    order: {
+      createdAt: 'DESC',
+    },
+  });
+}
+
+async findById(id: string): Promise<RouteEntity | null> {
+  return this.repository.findOne({
+    where: { id },
+  });
+}
+
 }

@@ -171,3 +171,46 @@ button:disabled {
     min-height: 420px;
   }
 }
+
+/* Custom styles for the Google Maps API elements */
+
+.saved-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+}
+
+.saved-list {
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.route-list-item {
+  text-align: left;
+  background: #f8fafc;
+  color: #172033;
+  border: 1px solid #e5edf6;
+  display: grid;
+  gap: 6px;
+}
+
+.route-list-item:hover {
+  background: #eef3f8;
+}
+
+.route-list-item span {
+  color: #475569;
+}
+
+.route-list-item small {
+  color: #64748b;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .saved-layout {
+    grid-template-columns: 1fr;
+  }
+}

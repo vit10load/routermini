@@ -4,6 +4,7 @@ import { CalculatedRouteType } from '../types/calculated-route.type';
 import { SaveRouteInput } from '../inputs/save-route.input';
 import { RouteType } from '../types/route.type';
 import { RoutesService } from '../../routes.service';
+import { ID } from '@nestjs/graphql';
 
 @Resolver()
 export class RoutesResolver {
@@ -25,4 +26,16 @@ export class RoutesResolver {
   saveRoute(@Args('input') input: SaveRouteInput): Promise<RouteType> {
     return this.routesService.saveRoute(input);
   }
+
+  @Query(() => [RouteType])
+  routes(): Promise<RouteType[]> {
+    return this.routesService.findAll();
+  }
+
+  @Query(() => RouteType, { nullable: true })
+  route(@Args('id', { type: () => ID }) id: string): Promise<RouteType | null> {
+    return this.routesService.findById(id);
+  }
+
+  
 }

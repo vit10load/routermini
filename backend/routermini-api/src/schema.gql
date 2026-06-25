@@ -34,6 +34,8 @@ scalar DateTime
 
 type Query {
   health: String!
+  routes: [RouteType!]!
+  route(id: ID!): RouteType
 }
 
 type Mutation {

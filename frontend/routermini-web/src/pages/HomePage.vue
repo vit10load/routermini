@@ -1,61 +1,65 @@
 <template>
   <main class="page">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">RouterMini</p>
-        <h1>Cálculo e visualização de rotas</h1>
-        <p class="subtitle">
-          Informe o ponto de coleta e entrega para calcular a rota via Google Maps.
-        </p>
-      </div>
-    </section>
+    <header class="hero">
+      <p class="eyebrow">RouterMini</p>
+      <h1>Cálculo, visualização e persistência de rotas</h1>
+      <p class="subtitle">
+        Informe os endereços de coleta e entrega para calcular a rota via Google Maps.
+      </p>
+    </header>
 
-    <section class="content">
-      <form class="card form-card" @submit.prevent="calculateRoute">
-        <label>
-          Ponto de coleta
-          <input
-            v-model="originAddress"
-            type="text"
-            placeholder="Ex: Campo Grande MS"
-          />
-        </label>
+    <section class="dashboard">
+      <aside class="card sidebar">
+        <form class="route-form" @submit.prevent="calculateRoute">
+          <label>
+            Ponto de coleta
+            <input
+              v-model="originAddress"
+              type="text"
+              placeholder="Ex: Campo Grande MS"
+            />
+          </label>
 
-        <label>
-          Ponto de entrega
-          <input
-            v-model="destinationAddress"
-            type="text"
-            placeholder="Ex: Aeroporto Internacional de Campo Grande MS"
-          />
-        </label>
+          <label>
+            Ponto de entrega
+            <input
+              v-model="destinationAddress"
+              type="text"
+              placeholder="Ex: Aeroporto Internacional de Campo Grande MS"
+            />
+          </label>
 
-        <button type="submit" :disabled="loading || !canCalculate">
-          {{ loading ? 'Calculando...' : 'Calcular rota' }}
-        </button>
+          <button type="submit" :disabled="loading || !canCalculate">
+            {{ loading ? 'Calculando...' : 'Calcular rota' }}
+          </button>
 
-        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      </form>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        </form>
 
-      <section class="card map-card">
+        <section v-if="calculatedRoute" class="route-summary">
+          <div class="summary-item">
+            <span>Distância</span>
+            <strong>{{ calculatedRoute.distanceKm }} km</strong>
+          </div>
+
+          <div class="summary-item">
+            <span>Tempo estimado</span>
+            <strong>{{ calculatedRoute.durationText }}</strong>
+          </div>
+
+          <div class="summary-item">
+            <span>Pontos da rota</span>
+            <strong>{{ calculatedRoute.points.length }}</strong>
+          </div>
+
+          <button type="button" class="secondary-button">
+            Salvar rota
+          </button>
+        </section>
+      </aside>
+
+      <section class="card map-panel">
         <RouteMap :points="calculatedRoute?.points ?? []" />
-      </section>
-
-      <section v-if="calculatedRoute" class="metrics">
-        <article class="card metric-card">
-          <span>Distância</span>
-          <strong>{{ calculatedRoute.distanceKm }} km</strong>
-        </article>
-
-        <article class="card metric-card">
-          <span>Tempo estimado</span>
-          <strong>{{ calculatedRoute.durationText }}</strong>
-        </article>
-
-        <article class="card metric-card">
-          <span>Pontos retornados</span>
-          <strong>{{ calculatedRoute.points.length }}</strong>
-        </article>
       </section>
     </section>
   </main>
@@ -64,9 +68,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useMutation } from '@vue/apollo-composable';
+import RouteMap from '../components/route/RouteMap.vue';
 import { CALCULATE_ROUTE_MUTATION } from '../graphql/mutations/calculateRoute';
 import type { CalculatedRoute, CalculateRouteResponse } from '../types/route';
-import RouteMap from '../components/route/RouteMap.vue';
 
 const originAddress = ref('');
 const destinationAddress = ref('');
@@ -77,9 +81,9 @@ const { mutate, loading } = useMutation<CalculateRouteResponse>(
   CALCULATE_ROUTE_MUTATION,
 );
 
-const canCalculate = computed(() => {
-  return originAddress.value.trim() && destinationAddress.value.trim();
-});
+const canCalculate = computed(
+  () => originAddress.value.trim() && destinationAddress.value.trim(),
+);
 
 async function calculateRoute() {
   errorMessage.value = '';

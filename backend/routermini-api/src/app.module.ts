@@ -6,9 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { RoutesModule } from './modules/routes/routes.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
+    
     ConfigModule.forRoot({
       isGlobal: true,
     }),

@@ -6,10 +6,12 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import type { SignOptions } from 'jsonwebtoken';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     PassportModule,
+    UsersModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({

@@ -1,27 +1,36 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { LoginInput } from '../graphql/inputs/login.input';
+import { UsersService } from '../../users/services/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
   async login(input: LoginInput): Promise<{ accessToken: string }> {
-    
-    const email = this.configService.get<string>('AUTH_USER_EMAIL');
-    const password = this.configService.get<string>('AUTH_USER_PASSWORD');
+    const user = await this.usersService.findByEmail(input.email);
 
-    if (input.email !== email || input.password !== password) {
+    if (!user) {
+      throw new UnauthorizedException('Credenciais inválidas.');
+    }
+
+    const passwordMatches = await bcrypt.compare(
+      input.password,
+      user.passwordHash,
+    );
+
+    if (!passwordMatches) {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
     const accessToken = await this.jwtService.signAsync({
-      sub: input.email,
-      email: input.email,
+      sub: user.id,
+      email: user.email,
+      name: user.name,
     });
 
     return { accessToken };

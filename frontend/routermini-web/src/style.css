@@ -278,3 +278,63 @@ button:disabled {
   width: fit-content;
   margin-top: 16px;
 }
+/**  css style header **/
+
+.app-header {
+  width: min(1280px, 94%);
+  margin: 20px auto 0;
+  padding: 16px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #ffffff;
+  border: 1px solid #e5edf6;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.brand {
+  text-decoration: none;
+  color: #172033;
+  font-weight: 900;
+  font-size: 1.2rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #475569;
+  font-weight: 800;
+}
+
+.nav-links a.router-link-active {
+  color: #2563eb;
+}
+
+.logout-button {
+  padding: 10px 14px;
+  background: #ef4444;
+}
+
+.logout-button:hover {
+  background: #dc2626;
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    align-items: flex-start;
+    gap: 14px;
+    flex-direction: column;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+  }
+}

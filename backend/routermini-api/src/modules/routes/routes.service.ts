@@ -8,6 +8,7 @@ import { RouteRepository } from './repositories/route.repository';
 
 @Injectable()
 export class RoutesService {
+  
   constructor(
     private readonly googleMapsGateWay: GoogleMapsGateWay,
     private readonly routeRepository: RouteRepository,

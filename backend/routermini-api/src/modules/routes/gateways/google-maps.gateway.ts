@@ -18,6 +18,7 @@ export class GoogleMapsGateWay {
 
     const url = 'https://maps.googleapis.com/maps/api/directions/json';
 
+    // chamada para api
     const response = await axios.get(url, {
       params: {
         origin: input.originAddress,

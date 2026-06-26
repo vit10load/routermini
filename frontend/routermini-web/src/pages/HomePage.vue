@@ -1,7 +1,7 @@
 <template>
   <main class="page">
     <header class="hero">
-      <p class="eyebrow">RouterMini</p>
+      <p class="eyebrow">RouterMini - App</p>
       <h1>Cálculo, visualização e persistência de rotas</h1>
       <p class="subtitle">
         Informe os endereços de coleta e entrega para calcular a rota via Google Maps.
@@ -88,19 +88,16 @@
     const errorMessage = ref('');
     const router = useRouter();
 
-    const { mutate: saveRouteMutation, loading: saving } =
-    useMutation<SaveRouteResponse>(SAVE_ROUTE_MUTATION);
+    const { mutate: saveRouteMutation, loading: saving } = useMutation<SaveRouteResponse>(SAVE_ROUTE_MUTATION);
 
     const successMessage = ref('');
 
-    const canCalculate = computed(() => originAddress.value.trim() && destinationAddress.value.trim(),);
+    const canCalculate = computed(() => originAddress.value.trim() && destinationAddress.value.trim());
 
-
-    const { mutate, loading } = useMutation<CalculateRouteResponse>(
-        CALCULATE_ROUTE_MUTATION,
-    );
+    const { mutate, loading } = useMutation<CalculateRouteResponse>(CALCULATE_ROUTE_MUTATION);
 
     async function calculateRoute() {
+
         errorMessage.value = '';
         successMessage.value = '';
         calculatedRoute.value = null;
@@ -112,8 +109,8 @@
 
         const result = await mutate({
             input: {
-            originAddress: originAddress.value,
-            destinationAddress: destinationAddress.value,
+              originAddress: originAddress.value,
+              destinationAddress: destinationAddress.value,
             },
         });
 

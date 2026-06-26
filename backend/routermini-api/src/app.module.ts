@@ -5,6 +5,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { RoutesModule } from './modules/routes/routes.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -16,10 +17,11 @@ import { RoutesModule } from './modules/routes/routes.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
+      context: ({ req }) => ({ req }),
     }),
 
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, RoutesModule],
+      imports: [ConfigModule, RoutesModule, AuthModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',

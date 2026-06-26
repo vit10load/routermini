@@ -6,6 +6,12 @@ import { RouteType } from '../types/route.type';
 import { RoutesService } from '../../routes.service';
 import { ID } from '@nestjs/graphql';
 
+// import guards in routes operations
+
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../../../auth/guards/gql-auth.guard';
+
+@UseGuards(GqlAuthGuard)
 @Resolver()
 export class RoutesResolver {
   constructor(private readonly routesService: RoutesService) {}
@@ -16,9 +22,7 @@ export class RoutesResolver {
   }
 
   @Mutation(() => CalculatedRouteType)
-  calculateRoute(
-    @Args('input') input: CalculateRouteInput,
-  ): Promise<CalculatedRouteType> {
+  calculateRoute(@Args('input') input: CalculateRouteInput): Promise<CalculatedRouteType> {
     return this.routesService.calculateRoute(input);
   }
 

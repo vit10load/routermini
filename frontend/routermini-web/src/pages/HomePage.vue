@@ -1,7 +1,6 @@
 <template>
   <main class="page">
     <header class="hero">
-      <p class="eyebrow">RouterMini - App</p>
       <h1>Cálculo, visualização e persistência de rotas</h1>
       <p class="subtitle">
         Informe os endereços de coleta e entrega para calcular a rota via Google Maps.
@@ -72,76 +71,69 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, ref } from 'vue';
-    import { useMutation } from '@vue/apollo-composable';
-    import RouteMap from '../components/route/RouteMap.vue';
-    import { CALCULATE_ROUTE_MUTATION } from '../graphql/mutations/calculateRoute';
-    import type { CalculatedRoute, CalculateRouteResponse } from '../types/route';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import RouteMap from '../components/route/RouteMap.vue';
+import type { CalculatedRoute } from '../types/route';
+import {
+  calculateRoute as calculateRouteService,
+  saveRoute as saveRouteService,
+} from '../services/route.service';
 
-    import { SAVE_ROUTE_MUTATION } from '../graphql/mutations/saveRoute';
-    import type { SaveRouteResponse } from '../types/route';
-    import { useRouter } from 'vue-router';
+const router = useRouter();
 
-    const originAddress = ref('');
-    const destinationAddress = ref('');
-    const calculatedRoute = ref<CalculatedRoute | null>(null);
-    const errorMessage = ref('');
-    const router = useRouter();
+const originAddress = ref('');
+const destinationAddress = ref('');
+const calculatedRoute = ref<CalculatedRoute | null>(null);
+const errorMessage = ref('');
+const successMessage = ref('');
+const loading = ref(false);
+const saving = ref(false);
 
-    const { mutate: saveRouteMutation, loading: saving } = useMutation<SaveRouteResponse>(SAVE_ROUTE_MUTATION);
+const canCalculate = computed(
+  () => originAddress.value.trim() && destinationAddress.value.trim(),
+);
 
-    const successMessage = ref('');
+async function calculateRoute() {
+  errorMessage.value = '';
+  successMessage.value = '';
+  calculatedRoute.value = null;
 
-    const canCalculate = computed(() => originAddress.value.trim() && destinationAddress.value.trim());
+  if (!canCalculate.value) {
+    errorMessage.value = 'Informe o endereço de coleta e entrega.';
+    return;
+  }
 
-    const { mutate, loading } = useMutation<CalculateRouteResponse>(CALCULATE_ROUTE_MUTATION);
+  try {
+    loading.value = true;
 
-    async function calculateRoute() {
+    calculatedRoute.value = await calculateRouteService({
+      originAddress: originAddress.value,
+      destinationAddress: destinationAddress.value,
+    });
+  } catch {
+    errorMessage.value = 'Não foi possível calcular a rota.';
+  } finally {
+    loading.value = false;
+  }
+}
 
-        errorMessage.value = '';
-        successMessage.value = '';
-        calculatedRoute.value = null;
+async function saveRoute() {
+  if (!calculatedRoute.value) return;
 
-        if (!canCalculate.value) {
-            errorMessage.value = 'Informe o endereço de coleta e entrega.';
-            return;
-        }
+  try {
+    saving.value = true;
+    errorMessage.value = '';
+    successMessage.value = '';
 
-        const result = await mutate({
-            input: {
-              originAddress: originAddress.value,
-              destinationAddress: destinationAddress.value,
-            },
-        });
+    await saveRouteService(calculatedRoute.value);
 
-        if (result?.data?.calculateRoute) {
-            calculatedRoute.value = result.data.calculateRoute;
-        }
-    }
-
-    async function saveRoute() {
-        if (!calculatedRoute.value) return;
-
-        successMessage.value = '';
-        errorMessage.value = '';
-
-        const result = await saveRouteMutation({
-            input: {
-                originAddress: calculatedRoute.value.originAddress,
-                destinationAddress: calculatedRoute.value.destinationAddress,
-                distanceKm: calculatedRoute.value.distanceKm,
-                durationText: calculatedRoute.value.durationText,
-                points: calculatedRoute.value.points.map((point) => ({
-                    sequence: point.sequence,
-                    lat: point.lat,
-                    lng: point.lng,
-                })),
-            },
-        });
-
-        if (result?.data?.saveRoute) {
-            successMessage.value = 'Rota salva com sucesso.';
-            router.push('/routes');
-        }
-    }
+    successMessage.value = 'Rota salva com sucesso.';
+    router.push('/routes');
+  } catch {
+    errorMessage.value = 'Não foi possível salvar a rota.';
+  } finally {
+    saving.value = false;
+  }
+}
 </script>

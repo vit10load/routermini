@@ -21,13 +21,15 @@
           Nenhuma rota encontrada.
         </p>
 
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
         <button
           v-for="route in filteredRoutes"
           :key="route.id"
           type="button"
           class="route-list-item"
           :class="{ active: selectedRoute?.id === route.id }"
-          @click="selectedRoute = route"
+          @click="selectRoute(route)"
         >
           <strong>{{ route.originAddress }}</strong>
           <span>→ {{ route.destinationAddress }}</span>
@@ -65,52 +67,62 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, ref, watch } from 'vue';
-    import { useQuery } from '@vue/apollo-composable';
-    import RouteMap from '../components/route/RouteMap.vue';
-    import { ROUTES_QUERY } from '../graphql/queries/routes';
-    import type { RoutesResponse, SavedRoute } from '../types/route';
+import { computed, onMounted, ref, watch } from 'vue';
+import RouteMap from '../components/route/RouteMap.vue';
+import { listRoutes } from '../services/route.service';
+import type { SavedRoute } from '../types/route';
 
-    const selectedRoute = ref<SavedRoute | null>(null);
-    const searchTerm = ref('');
+const selectedRoute = ref<SavedRoute | null>(null);
+const routes = ref<SavedRoute[]>([]);
+const searchTerm = ref('');
+const loading = ref(false);
+const errorMessage = ref('');
 
-    const { result, loading, refetch } = useQuery<RoutesResponse>(ROUTES_QUERY, null, {
-        fetchPolicy: 'network-only',
-    },);
+const filteredRoutes = computed(() => {
+  const term = searchTerm.value.toLowerCase().trim();
 
-    refetch();
+  if (!term) return routes.value;
 
-    const routes = computed(() => result.value?.routes ?? []);
+  return routes.value.filter((route) => {
+    return (
+      route.originAddress.toLowerCase().includes(term) ||
+      route.destinationAddress.toLowerCase().includes(term)
+    );
+  });
+});
 
-    const filteredRoutes = computed(() => {
-    const term = searchTerm.value.toLowerCase().trim();
+function selectFirstAvailableRoute() {
+  selectedRoute.value = filteredRoutes.value[0] ?? null;
+}
 
-    if (!term) return routes.value;
+async function loadRoutes() {
+  try {
+    loading.value = true;
+    errorMessage.value = '';
 
-    return routes.value.filter((route) => {
-            return (
-                route.originAddress.toLowerCase().includes(term) ||
-                route.destinationAddress.toLowerCase().includes(term)
-            );
-        });
-    });
+    routes.value = await listRoutes();
+    selectFirstAvailableRoute();
+  } catch {
+    errorMessage.value = 'Não foi possível carregar as rotas salvas.';
+  } finally {
+    loading.value = false;
+  }
+}
 
-    watch(filteredRoutes,(routes) => {
+function selectRoute(route: SavedRoute) {
+  selectedRoute.value = route;
+}
 
-        if (!routes.length) {
-            selectedRoute.value = null;
-            return;
-        }
+onMounted(loadRoutes);
 
+watch(searchTerm, () => {
+  const selectedExists = filteredRoutes.value.some(
+    (route) => route.id === selectedRoute.value?.id,
+  );
 
-        const selectedStillExists = routes.some((route) => route.id === selectedRoute.value?.id,);
-
-        if (!selectedRoute.value || !selectedStillExists) {
-            selectedRoute.value = routes[0];
-        }
-
-    },
-   { immediate: true },
-);
+  if (!selectedExists) {
+    selectFirstAvailableRoute();
+  }
+});
 
 </script>

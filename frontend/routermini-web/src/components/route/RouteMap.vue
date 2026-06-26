@@ -19,8 +19,9 @@ let originMarker: google.maps.Marker | null = null;
 let destinationMarker: google.maps.Marker | null = null;
 
 async function initMap() {
+
   setOptions({
-    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     version: 'weekly',
   });
 

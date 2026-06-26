@@ -1,17 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { isAuthenticated } from '../auth/auth.service';
+import AuthLayout from '../layouts/AuthLayout.vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import HomePage from '../pages/HomePage.vue';
 import LoginPage from '../pages/LoginPage.vue';
+import RegisterPage from '../pages/RegisterPage.vue';
 import SavedRoutesPage from '../pages/SavedRoutesPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/login',
-      name: 'login',
-      component: LoginPage,
+      path: '/auth',
+      component: AuthLayout,
+      children: [
+        {
+          path: 'login',
+          name: 'login',
+          component: LoginPage,
+        },
+        {
+          path: 'register',
+          name: 'register',
+          component: RegisterPage,
+        },
+      ],
     },
     {
       path: '/',
@@ -35,11 +48,13 @@ export const router = createRouter({
 
 router.beforeEach((to) => {
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    return '/login';
+    return '/auth/login';
   }
 
-  if (to.path === '/login' && isAuthenticated()) {
+  if ((to.path === '/auth/login' || to.path === '/auth/register') &&
+    isAuthenticated()
+  ) {
     return '/';
   }
-  
+
 });

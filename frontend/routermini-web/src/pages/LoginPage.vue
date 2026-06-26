@@ -21,6 +21,13 @@
         </button>
 
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+      <div class="auth-actions">
+        <RouterLink class="auth-link" to="/auth/register">
+          Ainda não possui uma conta? <strong>Cadastre-se</strong>
+        </RouterLink>
+      </div>
+
       </form>
     </section>
   </main>
@@ -28,39 +35,32 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMutation } from '@vue/apollo-composable';
 import { useRouter } from 'vue-router';
-import { LOGIN_MUTATION } from '../graphql/mutations/login';
-import { saveToken } from '../auth/auth.service';
-import type { LoginResponse } from '../types/auth';
+import { login as loginService } from '../services/auth.service';
 
 const router = useRouter();
 
 const email = ref('admin@routermini.com');
 const password = ref('admin123');
 const errorMessage = ref('');
-
-const { mutate, loading } = useMutation<LoginResponse>(LOGIN_MUTATION);
+const loading = ref(false);
 
 async function login() {
   errorMessage.value = '';
 
   try {
-    const result = await mutate({
-      input: {
-        email: email.value,
-        password: password.value,
-      },
+    loading.value = true;
+
+    await loginService({
+      email: email.value,
+      password: password.value,
     });
 
-    const token = result?.data?.login.accessToken;
-
-    if (token) {
-      saveToken(token);
-      router.push('/');
-    }
+    router.replace('/');
   } catch {
     errorMessage.value = 'E-mail ou senha inválidos.';
+  } finally {
+    loading.value = false;
   }
 }
 </script>

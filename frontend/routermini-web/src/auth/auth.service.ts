@@ -1,3 +1,6 @@
+import { jwtDecode } from 'jwt-decode';
+import type { AuthUser } from '../types/auth';
+
 const TOKEN_KEY = 'routermini_access_token';
 
 export function saveToken(token: string) {
@@ -14,4 +17,12 @@ export function removeToken() {
 
 export function isAuthenticated() {
   return Boolean(getToken());
+}
+
+export function getAuthenticatedUser(): AuthUser | null {
+  const token = getToken();
+
+  if (!token) return null;
+
+  return jwtDecode<AuthUser>(token);
 }

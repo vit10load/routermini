@@ -3,3 +3,9 @@ export interface LoginResponse {
     accessToken: string;
   };
 }
+
+export interface AuthUser {
+  userId: string;
+  email: string;
+  name: string;
+}

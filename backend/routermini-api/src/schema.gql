@@ -36,6 +36,13 @@ type AuthPayloadType {
   accessToken: String!
 }
 
+type UserType {
+  id: ID!
+  name: String!
+  email: String!
+  createdAt: DateTime!
+}
+
 type Query {
   health: String!
   routes: [RouteType!]!
@@ -43,9 +50,21 @@ type Query {
 }
 
 type Mutation {
+  registerUser(input: CreateUserInput!): UserType!
+  login(input: LoginInput!): AuthPayloadType!
   calculateRoute(input: CalculateRouteInput!): CalculatedRouteType!
   saveRoute(input: SaveRouteInput!): RouteType!
-  login(input: LoginInput!): AuthPayloadType!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 input CalculateRouteInput {
@@ -65,9 +84,4 @@ input RoutePointInput {
   sequence: Float!
   lat: Float!
   lng: Float!
-}
-
-input LoginInput {
-  email: String!
-  password: String!
 }

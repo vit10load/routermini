@@ -338,3 +338,9 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+
+/** name login diretamente no header **/
+.user-greeting {
+  color: #475569;
+  font-weight: 800;
+}

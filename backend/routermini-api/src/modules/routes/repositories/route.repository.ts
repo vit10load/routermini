@@ -12,61 +12,64 @@ export class RouteRepository {
     private readonly dataSource: DataSource,
   ) {}
 
-  async saveRoute(input: SaveRouteInput): Promise<RouteEntity> {
-  const orderedPoints = input.points
-    .sort((a, b) => a.sequence - b.sequence);
+  async saveRoute(input: SaveRouteInput, userId: string): Promise<RouteEntity> {
 
-  const lineString = orderedPoints
-    .map((point) => `${point.lng} ${point.lat}`)
-    .join(',');
+      const orderedPoints = input.points
+        .sort((a, b) => a.sequence - b.sequence);
 
-  const result = await this.dataSource.query(
-    `
-    INSERT INTO routes
-    (
-      "originAddress",
-      "destinationAddress",
-      "distanceKm",
-      "durationText",
-      points,
-      path
-    )
-    VALUES
-    (
-      $1,
-      $2,
-      $3,
-      $4,
-      $5,
-      ST_GeogFromText($6)
-    )
-    RETURNING *;
-    `,
-    [
-      input.originAddress,
-      input.destinationAddress,
-      input.distanceKm,
-      input.durationText,
-      JSON.stringify(orderedPoints),
-      `LINESTRING(${lineString})`,
-    ],
-  );
+      const lineString = orderedPoints
+        .map((point) => `${point.lng} ${point.lat}`)
+        .join(',');
 
-  return result[0];
-}
+      const result = await this.dataSource.query(
+        `
+        INSERT INTO routes
+        (
+          "userId",
+          "originAddress",
+          "destinationAddress",
+          "distanceKm",
+          "durationText",
+          points,
+          path
+        )
+        VALUES
+        (
+          $1,
+          $2,
+          $3,
+          $4,
+          $5,
+          $6,
+          ST_GeogFromText($7)
+        )
+        RETURNING *;
+        `,
+        [
+          userId,
+          input.originAddress,
+          input.destinationAddress,
+          input.distanceKm,
+          input.durationText,
+          JSON.stringify(orderedPoints),
+          `LINESTRING(${lineString})`,
+        ],
+      );
 
-async findAll(): Promise<RouteEntity[]> {
-  return this.repository.find({
-    order: {
-      createdAt: 'DESC',
-    },
-  });
-}
+    return result[0];
+  }
 
-async findById(id: string): Promise<RouteEntity | null> {
-  return this.repository.findOne({
-    where: { id },
-  });
-}
+  async findAll(userId: string): Promise<RouteEntity[]> {
+    return this.repository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findById(id: string, userId: string): Promise<RouteEntity | null> {
+    return this.repository.findOne({
+      where: { id, userId },
+    });
+  }
 
 }

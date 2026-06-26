@@ -34,4 +34,7 @@ export class RouteEntity {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column()
+  userId: string;
 }

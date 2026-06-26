@@ -8,7 +8,7 @@ import { RouteRepository } from './repositories/route.repository';
 
 @Injectable()
 export class RoutesService {
-  
+
   constructor(
     private readonly googleMapsGateWay: GoogleMapsGateWay,
     private readonly routeRepository: RouteRepository,
@@ -22,15 +22,15 @@ export class RoutesService {
     return this.googleMapsGateWay.calculateRoute(input);
   }
 
-  saveRoute(input: SaveRouteInput): Promise<RouteType> {
-    return this.routeRepository.saveRoute(input);
+  saveRoute(input: SaveRouteInput, userId: string): Promise<RouteType> {
+    return this.routeRepository.saveRoute(input, userId);
   }
 
-  findAll(): Promise<RouteType[]> {
-    return this.routeRepository.findAll();
+  findAll(userId: string): Promise<RouteType[]> {
+    return this.routeRepository.findAll(userId);
   }
 
-  findById(id: string): Promise<RouteType | null> {
-    return this.routeRepository.findById(id);
+  findById(id: string, userId: string): Promise<RouteType | null> {
+    return this.routeRepository.findById(id, userId);
   }
 }

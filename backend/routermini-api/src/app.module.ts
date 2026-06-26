@@ -11,6 +11,8 @@ import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     UsersModule,
+    AuthModule,
+    RoutesModule,
     
     ConfigModule.forRoot({
       isGlobal: true,
@@ -24,7 +26,7 @@ import { UsersModule } from './modules/users/users.module';
     }),
 
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, RoutesModule, AuthModule],
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
@@ -34,9 +36,11 @@ import { UsersModule } from './modules/users/users.module';
         password: config.get<string>('DATABASE_PASSWORD'),
         database: config.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
+        migrationsRun: true,
+        migrations: [join(__dirname, 'database/migrations/*{.ts,.js}')],
       }),
     }),
   ],
 })
-export class AppModule {}
+export class AppModule { }

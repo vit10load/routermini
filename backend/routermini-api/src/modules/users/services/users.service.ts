@@ -1,5 +1,6 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { CreateUserInput } from '../graphql/inputs/create-user.input';
 import { UserRepository } from '../repositories/user.repository';
 
 @Injectable()
@@ -21,7 +22,24 @@ export class UsersService implements OnModuleInit {
     }
   }
 
+  async create(input: CreateUserInput) {
+    const exists = await this.userRepository.findByEmail(input.email);
+
+    if (exists) {
+      throw new BadRequestException('E-mail já cadastrado.');
+    }
+
+    const passwordHash = await bcrypt.hash(input.password, 10);
+
+    return this.userRepository.create({
+      name: input.name,
+      email: input.email,
+      passwordHash,
+    });
+  }
+
   findByEmail(email: string) {
     return this.userRepository.findByEmail(email);
   }
+  
 }

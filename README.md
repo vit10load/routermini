@@ -1,448 +1,354 @@
-# 🚀 RouterMini App
+# 🚀 RouterMini
 
-<p align="center">
-
-![Vue](https://img.shields.io/badge/Vue%203-4FC08D?logo=vue.js&logoColor=white)
-![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)
-![GraphQL](https://img.shields.io/badge/GraphQL-E10098?logo=graphql&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
-![PostGIS](https://img.shields.io/badge/PostGIS-336791)
-![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-black?logo=jsonwebtokens)
-
-</p>
+Sistema Full Stack para cálculo, visualização e persistência de rotas usando **NestJS**, **GraphQL**, **Vue 3**, **TypeScript**, **PostgreSQL/PostGIS**, **Google Maps API**, **JWT** e **Docker**.
 
 ---
 
-# 📌 Sobre
+## Sumário
 
-RouterMini é uma aplicação Full Stack desenvolvida para planejamento, cálculo, visualização e persistência de rotas utilizando Google Maps.
-
-O projeto foi desenvolvido utilizando uma arquitetura modular baseada em NestJS no backend e Vue 3 no frontend, consumindo uma API GraphQL e persistindo informações geográficas utilizando PostgreSQL com PostGIS.
-
-Além dos requisitos obrigatórios do desafio técnico, foram implementados recursos adicionais como autenticação JWT, proteção de rotas, gerenciamento de usuários, Docker, arquitetura desacoplada entre frontend e backend e organização baseada em módulos.
-
----
-
-# 🎯 Objetivos
-
-A aplicação permite:
-
-- Calcular rotas utilizando Google Maps.
-- Exibir a rota em mapa incorporado.
-- Persistir rotas utilizando PostGIS.
-- Listar rotas previamente cadastradas.
-- Visualizar novamente qualquer rota.
-- Gerenciar usuários.
-- Autenticar utilizando JWT.
-- Proteger toda a aplicação através de autenticação baseada em token.
+- [Sobre o projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Arquitetura geral](#arquitetura-geral)
+- [Estrutura do projeto](#estrutura-do-projeto)
+- [Fluxos principais](#fluxos-principais)
+- [Como executar](#como-executar)
+- [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Usuário padrão](#usuário-padrão)
+- [Documentação técnica](#documentação-técnica)
+- [Diferenciais implementados](#diferenciais-implementados)
+- [Melhorias futuras](#melhorias-futuras)
 
 ---
 
-# 🏗 Arquitetura
+## Sobre o projeto
 
-## Visão Geral
+O **RouterMini** é uma aplicação Full Stack construída para receber um endereço de coleta e um endereço de entrega, calcular a rota utilizando a API do Google Maps, exibir o trajeto em um mapa incorporado e permitir a persistência da rota em banco de dados espacial.
 
-```text
-                     Vue 3
+O projeto foi desenvolvido seguindo uma arquitetura modular, com separação clara entre frontend, backend, autenticação, persistência, integração externa e documentação.
 
-                        │
-
-                        ▼
-
-                  Apollo Client
-
-                        │
-
-                        ▼
-
-                  GraphQL API
-
-                        │
-
-                        ▼
-
-                     NestJS
-
-          ┌─────────────┴──────────────┐
-
-          ▼                            ▼
-
- Google Maps API               PostgreSQL
-
-                                   │
-
-                                PostGIS
-```
+Além dos requisitos principais do desafio, o sistema também implementa autenticação JWT, cadastro de usuários, rotas protegidas, associação de rotas ao usuário autenticado e ambiente com Docker Compose.
 
 ---
 
-# Backend
+## Funcionalidades
 
-A aplicação foi construída utilizando arquitetura modular.
+### Usuários e autenticação
 
-Cada módulo possui responsabilidades bem definidas.
+- Cadastro de usuários.
+- Login.
+- Logout.
+- Autenticação via JWT.
+- Proteção de rotas no frontend.
+- Proteção de operações GraphQL no backend.
+- Exibição do usuário autenticado no layout principal.
 
-```text
-Modules
+### Rotas
 
-├── Auth
-├── Users
-└── Routes
-```
+- Inserção de endereço de coleta.
+- Inserção de endereço de entrega.
+- Cálculo de rota via Google Maps.
+- Retorno de distância total.
+- Retorno de tempo estimado.
+- Retorno de pontos intermediários ordenados.
+- Renderização da rota no mapa.
+- Persistência da rota no PostgreSQL/PostGIS.
+- Listagem das rotas salvas.
+- Filtro por origem ou destino.
+- Visualização de uma rota salva novamente no mapa.
 
-Cada módulo é composto por:
+### Infraestrutura
 
-```text
-Resolver
-
-↓
-
-Service
-
-↓
-
-Repository
-
-↓
-
-Entity
-
-↓
-
-Database
-```
-
-### Auth
-
-Responsável por:
-
-- Login
-- JWT
-- Guards
-- Estratégia Passport
-
-### Users
-
-Responsável por:
-
-- Cadastro de usuários
-- Consulta de usuários
-- Hash de senha utilizando bcrypt
-
-### Routes
-
-Responsável por:
-
-- Integração Google Maps
-- Persistência PostGIS
-- Listagem de rotas
-- Visualização
-- Cálculo da rota
+- Docker Compose.
+- PostgreSQL com PostGIS.
+- Backend NestJS containerizado.
+- Frontend Vue containerizado.
+- Variáveis de ambiente.
 
 ---
 
-# Frontend
+## Tecnologias
 
-O frontend foi organizado utilizando separação entre páginas, serviços e infraestrutura.
-
-```text
-Pages
-
-↓
-
-Services
-
-↓
-
-Apollo Client
-
-↓
-
-GraphQL
-
-↓
-
-Backend
-```
-
-As páginas não possuem conhecimento direto sobre GraphQL.
-
-Toda comunicação é realizada através de Services especializados.
-
----
-
-# Estrutura do Projeto
-
-```text
-backend/
-frontend/
-docker-compose.yml
-README.md
-```
-
-## Backend
-
-```text
-config/
-database/
-modules/
-```
-
-## Frontend
-
-```text
-apollo/
-auth/
-components/
-graphql/
-layouts/
-pages/
-router/
-services/
-types/
-```
-
----
-
-# Fluxo de Autenticação
-
-```text
-Login
-
-↓
-
-GraphQL Mutation
-
-↓
-
-AuthService
-
-↓
-
-UsersService
-
-↓
-
-UserRepository
-
-↓
-
-PostgreSQL
-
-↓
-
-JWT
-
-↓
-
-Frontend
-
-↓
-
-Authorization Bearer
-```
-
----
-
-# Fluxo de Cálculo
-
-```text
-Usuário
-
-↓
-
-Origem
-
-Destino
-
-↓
-
-GraphQL
-
-↓
-
-RoutesService
-
-↓
-
-GoogleMapsGateway
-
-↓
-
-Google Directions API
-
-↓
-
-Polyline
-
-↓
-
-Lista de Pontos
-
-↓
-
-Vue Google Maps
-```
-
----
-
-# Fluxo de Persistência
-
-```text
-Usuário autenticado
-
-↓
-
-JWT
-
-↓
-
-Guard
-
-↓
-
-RoutesService
-
-↓
-
-RouteRepository
-
-↓
-
-PostGIS
-
-↓
-
-geography(LineString)
-```
-
----
-
-# Banco de Dados
-
-## Users
-
-```text
-id
-name
-email
-passwordHash
-createdAt
-```
-
-## Routes
-
-```text
-id
-userId
-originAddress
-destinationAddress
-distanceKm
-durationText
-points (jsonb)
-path (geography)
-createdAt
-```
-
----
-
-# Tecnologias
-
-## Backend
+### Backend
 
 - NestJS
 - GraphQL
+- Apollo Server
 - TypeORM
 - PostgreSQL
 - PostGIS
 - JWT
 - Passport
-- Bcrypt
+- bcrypt
+- Docker
 
-## Frontend
+### Frontend
 
 - Vue 3
 - TypeScript
+- Vite
 - Apollo Client
 - Vue Router
 - Google Maps JavaScript API
+- jwt-decode
 
-## Infraestrutura
+### Banco de dados
 
-- Docker
-- Docker Compose
-
----
-
-# Funcionalidades
-
-- Cadastro de usuários
-- Login
-- Logout
-- Rotas protegidas
-- Cálculo de rota
-- Visualização em mapa
-- Persistência PostGIS
-- Listagem de rotas
-- Busca por origem e destino
-- Visualização de rotas salvas
+- PostgreSQL
+- PostGIS
+- JSONB
+- geography(LineString, 4326)
 
 ---
 
-# Como executar
+## Arquitetura geral
 
-## Backend
-
-```bash
-npm install
-npm run start:dev
+```text
+┌───────────────────────────────┐
+│            Vue 3              │
+│   Pages / Layouts / Services  │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│         Apollo Client         │
+└───────────────┬───────────────┘
+                │ GraphQL
+                ▼
+┌───────────────────────────────┐
+│            NestJS             │
+│ Resolvers / Services / Repos  │
+└───────┬─────────────────┬─────┘
+        │                 │
+        ▼                 ▼
+┌──────────────┐   ┌─────────────────┐
+│ Google Maps  │   │ PostgreSQL      │
+│ API          │   │ + PostGIS       │
+└──────────────┘   └─────────────────┘
 ```
 
-## Frontend
+---
 
-```bash
-npm install
-npm run dev
+## Estrutura do projeto
+
+```text
+routermini/
+├── backend/
+│   └── routermini-api/
+│       ├── src/
+│       │   ├── database/
+│       │   ├── modules/
+│       │   │   ├── auth/
+│       │   │   ├── users/
+│       │   │   └── routes/
+│       │   ├── app.module.ts
+│       │   └── main.ts
+│       ├── Dockerfile
+│       └── package.json
+│
+├── frontend/
+│   └── routermini-web/
+│       ├── src/
+│       │   ├── apollo/
+│       │   ├── auth/
+│       │   ├── components/
+│       │   ├── graphql/
+│       │   ├── layouts/
+│       │   ├── pages/
+│       │   ├── router/
+│       │   ├── services/
+│       │   └── types/
+│       ├── Dockerfile
+│       └── package.json
+│
+├── docker-compose.yml
+├── README.md
+└── docs/
 ```
 
-## Docker
+---
+
+## Fluxos principais
+
+### Autenticação
+
+```text
+Login/Cadastro
+      ↓
+GraphQL Mutation
+      ↓
+AuthService / UsersService
+      ↓
+PostgreSQL
+      ↓
+JWT
+      ↓
+Frontend salva token
+      ↓
+Apollo envia Authorization Bearer
+```
+
+### Cálculo de rota
+
+```text
+Usuário informa origem/destino
+      ↓
+Frontend chama RouteService
+      ↓
+Apollo envia mutation calculateRoute
+      ↓
+NestJS chama Google Maps
+      ↓
+Backend decodifica pontos
+      ↓
+Frontend renderiza no mapa
+```
+
+### Persistência
+
+```text
+Usuário autenticado salva rota
+      ↓
+GraphQL Guard valida JWT
+      ↓
+RoutesService
+      ↓
+RouteRepository
+      ↓
+ST_GeogFromText(LINESTRING)
+      ↓
+PostGIS geography(LineString,4326)
+```
+
+---
+
+## Como executar
+
+### Com Docker
+
+Na raiz do projeto:
 
 ```bash
 docker compose up --build
 ```
 
----
+Acesse:
 
-# Diferenciais Implementados
+```text
+Frontend: http://localhost:5173
+Backend GraphQL: http://localhost:3000/graphql
+```
 
-- Arquitetura modular
-- JWT
-- Guards GraphQL
-- Repository Pattern
-- Gateway Pattern
-- PostGIS
-- Docker
-- Layout responsivo
-- Separação entre Pages e Services
-- Proteção de rotas
-- Usuários persistidos no banco
+### Backend local
 
----
+```bash
+cd backend/routermini-api
+npm install
+npm run start:dev
+```
 
-# Melhorias Futuras
+### Frontend local
 
-- Migrations TypeORM
-- Testes Jest
-- GitHub Actions
-- Storybook
-- Places API (autocomplete)
-- Toasts
-- Skeleton Loading
-- Dashboard estatístico
+```bash
+cd frontend/routermini-web
+npm install
+npm run dev
+```
 
 ---
 
-# Autor
+## Variáveis de ambiente
+
+### Backend
+
+```env
+PORT=3000
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=routermini
+JWT_SECRET=routermini_dev_secret
+JWT_EXPIRES_IN=1d
+GOOGLE_MAPS_API_KEY=sua_chave
+```
+
+### Frontend
+
+```env
+VITE_GRAPHQL_URL=http://localhost:3000/graphql
+VITE_GOOGLE_MAPS_API_KEY=sua_chave
+```
+
+### Docker Compose
+
+Na raiz:
+
+```env
+GOOGLE_MAPS_API_KEY=sua_chave
+```
+
+---
+
+## Usuário padrão
+
+O projeto cria um usuário administrativo inicial no banco durante o boot da aplicação:
+
+```text
+E-mail: admin@routermini.com
+Senha: admin123
+```
+
+---
+
+## Documentação técnica
+
+Arquivos complementares:
+
+- `docs/architecture.md`
+- `docs/backend.md`
+- `docs/frontend.md`
+- `docs/graphql-api.md`
+- `docs/authentication.md`
+- `docs/postgis.md`
+- `docs/deployment.md`
+- `docs/storybook.md`
+- `docs/presentation.md`
+- `docs/decisions.md`
+
+---
+
+## Diferenciais implementados
+
+- Arquitetura modular.
+- Separação entre Pages, Services e Apollo no frontend.
+- Repository Pattern.
+- Gateway Pattern para integração com Google Maps.
+- JWT com Guards GraphQL.
+- Cadastro e login.
+- Rotas associadas ao usuário autenticado.
+- Persistência espacial com PostGIS.
+- Docker Compose.
+- Layout responsivo.
+- Listagem e filtro de rotas salvas.
+
+---
+
+## Melhorias futuras
+
+- Storybook completo.
+- Testes unitários com Jest.
+- GitHub Actions.
+- TypeORM migrations definitivas.
+- Google Places API para autocomplete.
+- Refresh token.
+- Controle de papéis.
+- Dashboard estatístico.
+- Observabilidade.
+- Deploy em nuvem.
+
+---
+
+## Autor
 
 **Vitor Oliveira**

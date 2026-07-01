@@ -1,4 +1,4 @@
-# 🚀 RouterMini
+# RouterMini App
 
 Sistema Full Stack para cálculo, visualização e persistência de rotas usando **NestJS**, **GraphQL**, **Vue 3**, **TypeScript**, **PostgreSQL/PostGIS**, **Google Maps API**, **JWT** e **Docker**.
 

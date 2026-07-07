@@ -33,15 +33,12 @@ export class RoutesService {
         model: input.vehicle.model, 
         userId, 
       });
-      
+
     return this.routeRepository.saveRoute( input, userId, vehicle.id); 
   }
 
   findAll(userId: string, filter?: RouteFilterInput): Promise<RouteType[]> {
-    return this.routeRepository.findAll(
-      userId,
-      filter?.vehiclePlate,
-    );
+    return this.routeRepository.findAll(userId, filter);
   }
 
   findById(id: string, userId: string): Promise<RouteType | null> {

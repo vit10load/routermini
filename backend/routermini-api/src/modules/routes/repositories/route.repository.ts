@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { RouteEntity } from '../entities/route.entity';
 import { SaveRouteInput } from '../graphql/inputs/save-route.input';
+import { RouteFilterInput } from '../graphql/inputs/route-filter.input';
 
 @Injectable()
 export class RouteRepository {
@@ -45,22 +46,34 @@ export class RouteRepository {
         vehicle: true,
       },
     });
-    
+
   }
 
-  async findAll(userId: string, vehiclePlate?: string): Promise<RouteEntity[]> {
-
+  async findAll(
+    userId: string,
+    filter?: RouteFilterInput,
+  ): Promise<RouteEntity[]> {
     const query = this.repository
       .createQueryBuilder('route')
       .leftJoinAndSelect('route.vehicle', 'vehicle')
       .where('route.userId = :userId', { userId })
       .orderBy('route.createdAt', 'DESC');
 
-      if (vehiclePlate?.trim()) {
-        query.andWhere('UPPER(vehicle.plate) LIKE :plate', {
-          plate: `%${vehiclePlate.trim().toUpperCase()}%`,
-        });
-      }
+    if (filter?.search?.trim()) {
+
+      const search = `%${filter.search.trim().toUpperCase()}%`;
+
+      query.andWhere(
+        `
+        UPPER(vehicle.plate) LIKE :search
+        OR UPPER(route.originAddress) LIKE :search
+        OR UPPER(route.destinationAddress) LIKE :search
+      `,
+        {
+          search,
+        },
+      );
+    }
 
     return query.getMany();
   }

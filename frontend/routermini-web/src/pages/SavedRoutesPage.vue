@@ -9,16 +9,12 @@
 
     <section class="saved-layout">
       <aside class="card saved-list">
-        <input
-          v-model="searchTerm"
-          type="text"
-          placeholder="Buscar por placa do veículo..."
-          @keyup.enter="loadRoutes"
-        />
+        <input v-model="searchTerm" type="text" placeholder="Buscar por placa do veículo..."
+          @keyup.enter="loadRoutes" />
 
-      <button type="button" @click="loadRoutes">
-        Buscar
-      </button>
+        <button type="button" @click="loadRoutes">
+          Buscar
+        </button>
 
         <p v-if="loading">Carregando rotas...</p>
 
@@ -28,14 +24,8 @@
 
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 
-        <button
-          v-for="route in filteredRoutes"
-          :key="route.id"
-          type="button"
-          class="route-list-item"
-          :class="{ active: selectedRoute?.id === route.id }"
-          @click="selectRoute(route)"
-        >
+        <button v-for="route in filteredRoutes" :key="route.id" type="button" class="route-list-item"
+          :class="{ active: selectedRoute?.id === route.id }" @click="selectRoute(route)">
           <strong>{{ route.originAddress }}</strong>
           <span>→ {{ route.destinationAddress }}</span>
           <small>{{ route.distanceKm }} km • {{ route.durationText }}</small>
@@ -67,15 +57,27 @@
               <strong>{{ selectedRoute.points.length }}</strong>
             </div>
           </div>
-        </div>
 
-        <div v-if="selectedRoute?.vehicle">
-          <span>Veículo</span>
-          <strong>
-            {{ selectedRoute.vehicle.plate }} •
-            {{ selectedRoute.vehicle.brand }}
-            {{ selectedRoute.vehicle.model }}
-          </strong>
+          <div class="detail-grid" v-if="selectedRoute?.vehicle">
+            <div>
+              <span>Veículo</span>
+              <strong>
+                {{ selectedRoute.vehicle.plate }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Marca</span>
+              <strong>{{ selectedRoute.vehicle.brand }}</strong>
+            </div>
+
+            <div>
+              <span>Modelo</span>
+              <strong>{{ selectedRoute.vehicle.model }}</strong>
+            </div>
+
+          </div>
+
         </div>
 
         <RouteMap :points="selectedRoute?.points ?? []" />
@@ -107,7 +109,9 @@
       loading.value = true;
       errorMessage.value = '';
 
-      routes.value = await listRoutes(searchTerm.value);
+      routes.value = await listRoutes({
+        search: searchTerm.value.trim() || undefined,
+      });
 
       selectFirstAvailableRoute();
 
@@ -116,7 +120,7 @@
     } finally {
       loading.value = false;
     }
-  }
+}
 
   function selectRoute(route: SavedRoute) {
     selectedRoute.value = route;

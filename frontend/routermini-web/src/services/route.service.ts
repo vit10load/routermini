@@ -59,15 +59,17 @@ export async function saveRoute(
   return data.saveRoute;
 }
 
-export async function listRoutes(vehiclePlate?: string) {
+export async function listRoutes(filter?: {
+  search?: string;
+}) {
+
   const { data } = await apolloClient.query<RoutesResponse>({
     query: ROUTES_QUERY,
     variables: {
-      filter: vehiclePlate?.trim()
-        ? { vehiclePlate: vehiclePlate.trim() }
-        : null,
+      filter,
     },
     fetchPolicy: 'network-only',
   });
+
   return data.routes;
 }

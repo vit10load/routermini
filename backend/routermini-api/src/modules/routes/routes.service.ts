@@ -5,6 +5,7 @@ import { SaveRouteInput } from './graphql/inputs/save-route.input';
 import { RouteType } from './graphql/types/route.type';
 import { GoogleMapsGateWay } from '../routes/gateways/google-maps.gateway';
 import { RouteRepository } from './repositories/route.repository';
+import { VehiclesService } from '../vehicles/services/vehicles.service';
 
 @Injectable()
 export class RoutesService {
@@ -12,6 +13,7 @@ export class RoutesService {
   constructor(
     private readonly googleMapsGateWay: GoogleMapsGateWay,
     private readonly routeRepository: RouteRepository,
+    private readonly vehiclesService: VehiclesService,
   ) {}
 
   health(): string {
@@ -22,8 +24,14 @@ export class RoutesService {
     return this.googleMapsGateWay.calculateRoute(input);
   }
 
-  saveRoute(input: SaveRouteInput, userId: string): Promise<RouteType> {
-    return this.routeRepository.saveRoute(input, userId);
+  async saveRoute( input: SaveRouteInput, userId: string, ): Promise<RouteType> { 
+    const vehicle = await this.vehiclesService.createOrFind(
+      { plate: input.vehicle.plate, 
+        brand: input.vehicle.brand, 
+        model: input.vehicle.model, 
+        userId, 
+      });
+    return this.routeRepository.saveRoute( input, userId, vehicle.id); 
   }
 
   findAll(userId: string): Promise<RouteType[]> {

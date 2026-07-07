@@ -10,51 +10,32 @@ export class RouteRepository {
     @InjectRepository(RouteEntity)
     private readonly repository: Repository<RouteEntity>,
     private readonly dataSource: DataSource,
-  ) {}
+  ) { }
 
-  async saveRoute(input: SaveRouteInput, userId: string): Promise<RouteEntity> {
+  async saveRoute(input: SaveRouteInput, userId: string, vehicleId: string): Promise<RouteEntity> {
 
-      const orderedPoints = input.points
-        .sort((a, b) => a.sequence - b.sequence);
+    const orderedPoints = input.points
+      .sort((a, b) => a.sequence - b.sequence);
 
-      const lineString = orderedPoints
-        .map((point) => `${point.lng} ${point.lat}`)
-        .join(',');
+    const lineString = orderedPoints
+      .map((point) => `${point.lng} ${point.lat}`)
+      .join(',');
 
-      const result = await this.dataSource.query(
-        `
-        INSERT INTO routes
-        (
-          "userId",
-          "originAddress",
-          "destinationAddress",
-          "distanceKm",
-          "durationText",
-          points,
-          path
-        )
-        VALUES
-        (
-          $1,
-          $2,
-          $3,
-          $4,
-          $5,
-          $6,
-          ST_GeogFromText($7)
-        )
-        RETURNING *;
+    const result = await this.dataSource.query(
+      `
+        INSERT INTO routes ( "userId", "vehicleId", "originAddress", "destinationAddress", "distanceKm", "durationText", points, path ) VALUES ( $1, $2, $3, $4, $5, $6, $7, ST_GeogFromText($8) ) RETURNING *;
         `,
-        [
-          userId,
-          input.originAddress,
-          input.destinationAddress,
-          input.distanceKm,
-          input.durationText,
-          JSON.stringify(orderedPoints),
-          `LINESTRING(${lineString})`,
-        ],
-      );
+      [
+        userId,
+        vehicleId,
+        input.originAddress,
+        input.destinationAddress,
+        input.distanceKm,
+        input.durationText,
+        JSON.stringify(orderedPoints),
+        `LINESTRING(${lineString})`,
+      ],
+    );
 
     return result[0];
   }

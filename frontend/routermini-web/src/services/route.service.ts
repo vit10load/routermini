@@ -51,6 +51,7 @@ export async function saveRoute(route: CalculatedRoute) {
 }
 
 export async function listRoutes() {
+  // chamada api para trazer a rotas salvas
   const { data } = await apolloClient.query<RoutesResponse>({
     query: ROUTES_QUERY,
     fetchPolicy: 'network-only',

@@ -7,12 +7,14 @@ import { join } from 'path';
 import { RoutesModule } from './modules/routes/routes.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
     RoutesModule,
+    VehiclesModule,
     
     ConfigModule.forRoot({
       isGlobal: true,

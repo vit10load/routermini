@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
+import { VehicleEntity } from './vehicle.entity';
 
 @Entity('routes')
 export class RouteEntity {
@@ -37,4 +38,12 @@ export class RouteEntity {
 
   @Column()
   userId: string;
+
+  @Column({ nullable: true })
+  vehicleId: string;
+
+  @ManyToOne(() => VehicleEntity)
+  @JoinColumn({ name: 'vehicleId' })
+  vehicle: VehicleEntity;
+
 }

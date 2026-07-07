@@ -5,9 +5,13 @@ import { RouteRepository } from './repositories/route.repository';
 import { RoutesResolver } from './graphql/resolvers/routes.resolver';
 import { RoutesService } from './routes.service';
 import { GoogleMapsGateWay } from './gateways/google-maps.gateway';
+import { VehiclesModule } from '../vehicles/vehicles.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RouteEntity])],
+  imports: [
+    TypeOrmModule.forFeature([RouteEntity]), 
+    VehiclesModule,
+  ],
   providers: [
     RoutesResolver,
     RoutesService,

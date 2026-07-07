@@ -2,8 +2,27 @@ import { Field, Float, InputType } from '@nestjs/graphql';
 import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { RoutePointType } from '../types/route-point.type';
 
+
+// chamada para entrada de informacoes modelo de entrada para salvar veiculo
+@InputType() 
+export class VehicleInput { 
+  
+  @Field() 
+  @IsString() 
+  plate: string; 
+  
+  @Field() 
+  @IsString() 
+  brand: string; 
+  
+  @Field() 
+  @IsString() 
+  model: string; 
+}
+
 @InputType()
 export class SaveRouteInput {
+
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -26,6 +45,9 @@ export class SaveRouteInput {
   @Field(() => [RoutePointInput])
   @IsArray()
   points: RoutePointInput[];
+
+  @Field(() => VehicleInput) 
+  vehicle: VehicleInput;
 }
 
 @InputType()

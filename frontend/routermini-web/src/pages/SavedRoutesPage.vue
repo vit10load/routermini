@@ -12,8 +12,13 @@
         <input
           v-model="searchTerm"
           type="text"
-          placeholder="Buscar por origem ou destino..."
+          placeholder="Buscar por placa do veículo..."
+          @keyup.enter="loadRoutes"
         />
+
+      <button type="button" @click="loadRoutes">
+        Buscar
+      </button>
 
         <p v-if="loading">Carregando rotas...</p>
 
@@ -34,6 +39,10 @@
           <strong>{{ route.originAddress }}</strong>
           <span>→ {{ route.destinationAddress }}</span>
           <small>{{ route.distanceKm }} km • {{ route.durationText }}</small>
+
+          <small v-if="route.vehicle">
+            {{ route.vehicle.plate }} • {{ route.vehicle.brand }} {{ route.vehicle.model }}
+          </small>
         </button>
       </aside>
 
@@ -60,6 +69,15 @@
           </div>
         </div>
 
+        <div v-if="selectedRoute?.vehicle">
+          <span>Veículo</span>
+          <strong>
+            {{ selectedRoute.vehicle.plate }} •
+            {{ selectedRoute.vehicle.brand }}
+            {{ selectedRoute.vehicle.model }}
+          </strong>
+        </div>
+
         <RouteMap :points="selectedRoute?.points ?? []" />
       </section>
     </section>
@@ -67,62 +85,54 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import RouteMap from '../components/route/RouteMap.vue';
-import { listRoutes } from '../services/route.service';
-import type { SavedRoute } from '../types/route';
+  import { computed, onMounted, ref, watch } from 'vue';
+  import RouteMap from '../components/route/RouteMap.vue';
+  import { listRoutes } from '../services/route.service';
+  import type { SavedRoute } from '../types/route';
 
-const selectedRoute = ref<SavedRoute | null>(null);
-const routes = ref<SavedRoute[]>([]);
-const searchTerm = ref('');
-const loading = ref(false);
-const errorMessage = ref('');
+  const selectedRoute = ref<SavedRoute | null>(null);
+  const routes = ref<SavedRoute[]>([]);
+  const searchTerm = ref('');
+  const loading = ref(false);
+  const errorMessage = ref('');
 
-const filteredRoutes = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim();
+  const filteredRoutes = computed(() => routes.value);
 
-  if (!term) return routes.value;
+  function selectFirstAvailableRoute() {
+    selectedRoute.value = filteredRoutes.value[0] ?? null;
+  }
 
-  return routes.value.filter((route) => {
-    return (
-      route.originAddress.toLowerCase().includes(term) ||
-      route.destinationAddress.toLowerCase().includes(term)
+  async function loadRoutes() {
+    try {
+      loading.value = true;
+      errorMessage.value = '';
+
+      routes.value = await listRoutes(searchTerm.value);
+
+      selectFirstAvailableRoute();
+
+    } catch {
+      errorMessage.value = 'Não foi possível carregar as rotas salvas.';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  function selectRoute(route: SavedRoute) {
+    selectedRoute.value = route;
+  }
+
+  onMounted(loadRoutes);
+
+  watch(searchTerm, () => {
+    
+    const selectedExists = filteredRoutes.value.some(
+      (route) => route.id === selectedRoute.value?.id,
     );
+
+    if (!selectedExists) {
+      selectFirstAvailableRoute();
+    }
   });
-});
-
-function selectFirstAvailableRoute() {
-  selectedRoute.value = filteredRoutes.value[0] ?? null;
-}
-
-async function loadRoutes() {
-  try {
-    loading.value = true;
-    errorMessage.value = '';
-
-    routes.value = await listRoutes();
-    selectFirstAvailableRoute();
-  } catch {
-    errorMessage.value = 'Não foi possível carregar as rotas salvas.';
-  } finally {
-    loading.value = false;
-  }
-}
-
-function selectRoute(route: SavedRoute) {
-  selectedRoute.value = route;
-}
-
-onMounted(loadRoutes);
-
-watch(searchTerm, () => {
-  const selectedExists = filteredRoutes.value.some(
-    (route) => route.id === selectedRoute.value?.id,
-  );
-
-  if (!selectedExists) {
-    selectFirstAvailableRoute();
-  }
-});
 
 </script>

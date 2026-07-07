@@ -55,7 +55,12 @@
             <strong>{{ calculatedRoute.points.length }}</strong>
           </div>
 
-          <button type="button" class="secondary-button" :disabled="saving" @click="saveRoute">
+          <button
+            type="button"
+            class="secondary-button"
+            :disabled="saving"
+            @click="showVehiclePopup = true"
+          >
             {{ saving ? 'Salvando...' : 'Salvar rota' }}
           </button>
 
@@ -68,20 +73,27 @@
       </section>
     </section>
   </main>
+  <Popup
+    v-model="showVehiclePopup"
+    @confirm="saveRoute"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import RouteMap from '../components/route/RouteMap.vue';
-import type { CalculatedRoute } from '../types/route';
+import type { CalculatedRoute, SaveRouteVehicleInput } from '../types/route';
 import {
   calculateRoute as calculateRouteService,
   saveRoute as saveRouteService,
 } from '../services/route.service';
 
+import Popup from '../components/popup/Popup.vue';
+
 const router = useRouter();
 
+const showVehiclePopup = ref(false);
 const originAddress = ref('');
 const destinationAddress = ref('');
 const calculatedRoute = ref<CalculatedRoute | null>(null);
@@ -111,6 +123,7 @@ async function calculateRoute() {
       originAddress: originAddress.value,
       destinationAddress: destinationAddress.value,
     });
+
   } catch {
     errorMessage.value = 'Não foi possível calcular a rota.';
   } finally {
@@ -118,19 +131,28 @@ async function calculateRoute() {
   }
 }
 
-async function saveRoute() {
+async function saveRoute(vehicle: SaveRouteVehicleInput) {
+
   if (!calculatedRoute.value) return;
 
   try {
+
     saving.value = true;
     errorMessage.value = '';
     successMessage.value = '';
 
-    await saveRouteService(calculatedRoute.value);
+
+    console.log('Saving route with calculatedRoute:', calculatedRoute.value);
+    console.log('Saving route with vehicle:', vehicle);
+
+    await saveRouteService(calculatedRoute.value, vehicle);
 
     successMessage.value = 'Rota salva com sucesso.';
+    showVehiclePopup.value = false;
     router.push('/routes');
-  } catch {
+
+  } catch(e) {
+    console.log(e);
     errorMessage.value = 'Não foi possível salvar a rota.';
   } finally {
     saving.value = false;

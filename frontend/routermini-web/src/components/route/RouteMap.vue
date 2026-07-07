@@ -3,97 +3,97 @@
 </template>
 
 <script setup lang="ts">
-import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
-import { onMounted, ref, watch } from 'vue';
-import type { RoutePoint } from '../../types/route';
+  import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
+  import { onMounted, ref, watch } from 'vue';
+  import type { RoutePoint } from '../../types/route';
 
-const props = defineProps<{
-  points: RoutePoint[];
-}>();
+  const props = defineProps<{
+    points: RoutePoint[];
+  }>();
 
-const mapElement = ref<HTMLDivElement | null>(null);
+  const mapElement = ref<HTMLDivElement | null>(null);
 
-let map: google.maps.Map | null = null;
-let polyline: google.maps.Polyline | null = null;
-let originMarker: google.maps.Marker | null = null;
-let destinationMarker: google.maps.Marker | null = null;
+  let map: google.maps.Map | null = null;
+  let polyline: google.maps.Polyline | null = null;
+  let originMarker: google.maps.Marker | null = null;
+  let destinationMarker: google.maps.Marker | null = null;
 
-async function initMap() {
+  async function initMap() {
 
-  setOptions({
-    key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    version: 'weekly',
-  });
+    setOptions({
+      key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+      version: 'weekly',
+    });
 
-  const { Map } = (await importLibrary('maps')) as google.maps.MapsLibrary;
-  await importLibrary('marker');
+    const { Map } = (await importLibrary('maps')) as google.maps.MapsLibrary;
+    await importLibrary('marker');
 
-  map = new Map(mapElement.value as HTMLElement, {
-    center: { lat: -20.4697, lng: -54.6201 },
-    zoom: 12,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: true,
-  });
+    map = new Map(mapElement.value as HTMLElement, {
+      center: { lat: -20.4697, lng: -54.6201 },
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
 
-  drawRoute();
-}
+    drawRoute();
+  }
 
-function clearRoute() {
-  polyline?.setMap(null);
-  originMarker?.setMap(null);
-  destinationMarker?.setMap(null);
+  function clearRoute() {
+    polyline?.setMap(null);
+    originMarker?.setMap(null);
+    destinationMarker?.setMap(null);
 
-  polyline = null;
-  originMarker = null;
-  destinationMarker = null;
-}
+    polyline = null;
+    originMarker = null;
+    destinationMarker = null;
+  }
 
-function drawRoute() {
-  if (!map || !props.points.length) return;
+  function drawRoute() {
+    if (!map || !props.points.length) return;
 
-  clearRoute();
+    clearRoute();
 
-  const path = props.points.map((point) => ({
-    lat: point.lat,
-    lng: point.lng,
-  }));
+    const path = props.points.map((point) => ({
+      lat: point.lat,
+      lng: point.lng,
+    }));
 
-  polyline = new google.maps.Polyline({
-    path,
-    geodesic: true,
-    strokeOpacity: 1,
-    strokeWeight: 5,
-  });
+    polyline = new google.maps.Polyline({
+      path,
+      geodesic: true,
+      strokeOpacity: 1,
+      strokeWeight: 5,
+    });
 
-  polyline.setMap(map);
+    polyline.setMap(map);
 
-  const bounds = new google.maps.LatLngBounds();
-  path.forEach((point) => bounds.extend(point));
-  map.fitBounds(bounds);
+    const bounds = new google.maps.LatLngBounds();
+    path.forEach((point) => bounds.extend(point));
+    map.fitBounds(bounds);
 
-  originMarker = new google.maps.Marker({
-    position: path[0],
-    map,
-    label: 'A',
-    title: 'Ponto de coleta',
-  });
+    originMarker = new google.maps.Marker({
+      position: path[0],
+      map,
+      label: 'A',
+      title: 'Ponto de coleta',
+    });
 
-  destinationMarker = new google.maps.Marker({
-    position: path[path.length - 1],
-    map,
-    label: 'B',
-    title: 'Ponto de entrega',
-  });
-}
+    destinationMarker = new google.maps.Marker({
+      position: path[path.length - 1],
+      map,
+      label: 'B',
+      title: 'Ponto de entrega',
+    });
+  }
 
-onMounted(initMap);
+  onMounted(initMap);
 
-watch(
-  () => props.points,
-  () => drawRoute(),
-  { deep: true },
-);
+  watch(
+    () => props.points,
+    () => drawRoute(),
+    { deep: true },
+  );
 </script>
 
 <style scoped>

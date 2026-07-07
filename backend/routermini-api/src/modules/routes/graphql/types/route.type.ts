@@ -1,5 +1,6 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { RoutePointType } from './route-point.type';
+import { VehicleType } from 'src/modules/vehicles/graphql/types/vehicle.type';
 
 @ObjectType()
 export class RouteType {
@@ -23,4 +24,7 @@ export class RouteType {
 
   @Field()
   createdAt: Date;
+
+  @Field(() => VehicleType)
+  vehicle: VehicleType;
 }

@@ -7,6 +7,7 @@ import type {
   CalculatedRoute,
   RoutesResponse,
   SaveRouteResponse,
+  SaveRouteVehicleInput,
 } from '../types/route';
 
 export async function calculateRoute(input: {
@@ -25,7 +26,10 @@ export async function calculateRoute(input: {
   return data.calculateRoute;
 }
 
-export async function saveRoute(route: CalculatedRoute) {
+export async function saveRoute(
+  route: CalculatedRoute,
+  vehicle: SaveRouteVehicleInput,
+) {
   const { data } = await apolloClient.mutate<SaveRouteResponse>({
     mutation: SAVE_ROUTE_MUTATION,
     variables: {
@@ -39,6 +43,11 @@ export async function saveRoute(route: CalculatedRoute) {
           lat: point.lat,
           lng: point.lng,
         })),
+        vehicle: {
+          plate: vehicle.plate,
+          brand: vehicle.brand,
+          model: vehicle.model,
+        },
       },
     },
   });
@@ -50,12 +59,15 @@ export async function saveRoute(route: CalculatedRoute) {
   return data.saveRoute;
 }
 
-export async function listRoutes() {
-  // chamada api para trazer a rotas salvas
+export async function listRoutes(vehiclePlate?: string) {
   const { data } = await apolloClient.query<RoutesResponse>({
     query: ROUTES_QUERY,
+    variables: {
+      filter: vehiclePlate?.trim()
+        ? { vehiclePlate: vehiclePlate.trim() }
+        : null,
+    },
     fetchPolicy: 'network-only',
   });
-
   return data.routes;
 }

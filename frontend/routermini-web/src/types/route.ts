@@ -29,3 +29,22 @@ export interface SaveRouteResponse {
 export interface RoutesResponse {
   routes: SavedRoute[];
 }
+
+export interface Vehicle {
+  id?: string;
+  plate: string;
+  brand: string;
+  model: string;
+}
+
+export interface SaveRouteVehicleInput {
+  plate: string;
+  brand: string;
+  model: string;
+}
+
+export interface SavedRoute extends CalculatedRoute {
+  id: string;
+  createdAt: string;
+  vehicle?: Vehicle;
+}

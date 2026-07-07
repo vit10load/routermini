@@ -39,7 +39,7 @@ export class RouteEntity {
   @Column()
   userId: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   vehicleId: string;
 
   @ManyToOne(() => VehicleEntity)

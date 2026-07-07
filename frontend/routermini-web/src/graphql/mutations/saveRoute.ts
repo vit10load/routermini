@@ -9,6 +9,12 @@ export const SAVE_ROUTE_MUTATION = gql`
       distanceKm
       durationText
       createdAt
+      vehicle {
+        id
+        plate
+        brand
+        model
+      }
       points {
         sequence
         lat

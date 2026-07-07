@@ -6,6 +6,7 @@ import { RouteType } from './graphql/types/route.type';
 import { GoogleMapsGateWay } from '../routes/gateways/google-maps.gateway';
 import { RouteRepository } from './repositories/route.repository';
 import { VehiclesService } from '../vehicles/services/vehicles.service';
+import { RouteFilterInput } from './graphql/inputs/route-filter.input';
 
 @Injectable()
 export class RoutesService {
@@ -25,17 +26,22 @@ export class RoutesService {
   }
 
   async saveRoute( input: SaveRouteInput, userId: string, ): Promise<RouteType> { 
+
     const vehicle = await this.vehiclesService.createOrFind(
       { plate: input.vehicle.plate, 
         brand: input.vehicle.brand, 
         model: input.vehicle.model, 
         userId, 
       });
+      
     return this.routeRepository.saveRoute( input, userId, vehicle.id); 
   }
 
-  findAll(userId: string): Promise<RouteType[]> {
-    return this.routeRepository.findAll(userId);
+  findAll(userId: string, filter?: RouteFilterInput): Promise<RouteType[]> {
+    return this.routeRepository.findAll(
+      userId,
+      filter?.vehiclePlate,
+    );
   }
 
   findById(id: string, userId: string): Promise<RouteType | null> {

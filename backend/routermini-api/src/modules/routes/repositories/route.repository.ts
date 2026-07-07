@@ -37,14 +37,32 @@ export class RouteRepository {
       ],
     );
 
-    return result[0];
+    return this.repository.findOneOrFail({
+      where: {
+        id: result[0].id,
+      },
+      relations: {
+        vehicle: true,
+      },
+    });
+    
   }
 
-  async findAll(userId: string): Promise<RouteEntity[]> {
-    return this.repository.find({
-      where: { userId },
-      order: { createdAt: 'DESC' },
-    });
+  async findAll(userId: string, vehiclePlate?: string): Promise<RouteEntity[]> {
+
+    const query = this.repository
+      .createQueryBuilder('route')
+      .leftJoinAndSelect('route.vehicle', 'vehicle')
+      .where('route.userId = :userId', { userId })
+      .orderBy('route.createdAt', 'DESC');
+
+      if (vehiclePlate?.trim()) {
+        query.andWhere('UPPER(vehicle.plate) LIKE :plate', {
+          plate: `%${vehiclePlate.trim().toUpperCase()}%`,
+        });
+      }
+
+    return query.getMany();
   }
 
   async findById(id: string, userId: string): Promise<RouteEntity | null> {

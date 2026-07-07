@@ -8,6 +8,7 @@ import { RoutesService } from '../../routes.service';
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../../../auth/guards/gql-auth.guard';
+import { RouteFilterInput } from '../inputs/route-filter.input';
 
 @UseGuards(GqlAuthGuard)
 @Resolver()
@@ -26,12 +27,14 @@ export class RoutesResolver {
 
   @Mutation(() => RouteType)
   saveRoute(@Args('input') input: SaveRouteInput, @Context() context: { req: { user: { userId: string } } }): Promise<RouteType> {
+    console.log('saveRoute input:', input);
+    console.log('saveRoute userId:', context.req.user.userId);
     return this.routesService.saveRoute(input, context.req.user.userId);
   }
 
   @Query(() => [RouteType])
-  routes(@Context() context: { req: { user: { userId: string } } }): Promise<RouteType[]> {
-    return this.routesService.findAll(context.req.user.userId);
+  routes(@Context() context: { req: { user: { userId: string } } }, @Args('filter', { nullable: true }) filter?: RouteFilterInput): Promise<RouteType[]> {
+    return this.routesService.findAll(context.req.user.userId, filter);
   }
 
   @Query(() => RouteType, { nullable: true })

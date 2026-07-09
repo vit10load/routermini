@@ -2,16 +2,33 @@
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #172033;
   background: #eef3f8;
+  height: 100%;
 }
 
-* {
+html, body, #app {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
   background: linear-gradient(135deg, #eef3f8 0%, #f8fafc 100%);
+}
+
+.app-footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #cecece;
+  border-top: 1px solid #ddd;
+  margin-top: auto;
+  height: 70px;
 }
 
 .page {

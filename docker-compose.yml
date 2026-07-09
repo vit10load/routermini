@@ -15,7 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
   backend:
     build:
       context: ./backend/routermini-api
@@ -35,7 +34,15 @@ services:
       JWT_SECRET: routermini_dev_secret
       JWT_EXPIRES_IN: 1d
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
-
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/routermini-api/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./backend/routermini-api/package.json
   frontend:
     build:
       context: ./frontend/routermini-web
@@ -47,6 +54,14 @@ services:
     environment:
       VITE_GRAPHQL_URL: http://localhost:3000/graphql
       VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
-
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/routermini-web/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./frontend/routermini-web/package.json
 volumes:
   postgres_data:

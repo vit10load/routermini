@@ -10,16 +10,15 @@ export class GoogleMapsGateWay {
   constructor(private readonly configService: ConfigService) {}
 
   async calculateRoute(input: CalculateRouteInput): Promise<CalculatedRouteType> {
+    
     const apiKey = this.configService.get<string>('GOOGLE_MAPS_API_KEY');
+    const apiURL = this.configService.get<string>('GOOGLE_MAPS_API_URL');
 
-    if (!apiKey) {
-      throw new InternalServerErrorException('Google Maps API key não configurada.');
+    if (!apiKey || !apiURL) {
+      throw new InternalServerErrorException('Google Maps API key ou URL não configuradas.');
     }
 
-    const url = 'https://maps.googleapis.com/maps/api/directions/json';
-
-    // chamada para api
-    const response = await axios.get(url, {
+    const response = await axios.get(apiURL, {
       params: {
         origin: input.originAddress,
         destination: input.destinationAddress,

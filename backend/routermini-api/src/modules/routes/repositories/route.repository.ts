@@ -7,6 +7,7 @@ import { RouteFilterInput } from '../graphql/inputs/route-filter.input';
 
 @Injectable()
 export class RouteRepository {
+  
   constructor(
     @InjectRepository(RouteEntity)
     private readonly repository: Repository<RouteEntity>,
@@ -49,10 +50,8 @@ export class RouteRepository {
 
   }
 
-  async findAll(
-    userId: string,
-    filter?: RouteFilterInput,
-  ): Promise<RouteEntity[]> {
+  async findAll(userId: string, filter?: RouteFilterInput): Promise<RouteEntity[]> {
+
     const query = this.repository
       .createQueryBuilder('route')
       .leftJoinAndSelect('route.vehicle', 'vehicle')

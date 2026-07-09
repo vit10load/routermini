@@ -1,6 +1,5 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
 import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { RoutePointType } from '../types/route-point.type';
 
 // chamada para entrada de informacoes modelo de entrada para salvar veiculo
 @InputType() 

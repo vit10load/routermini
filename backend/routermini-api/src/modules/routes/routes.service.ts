@@ -28,11 +28,11 @@ export class RoutesService {
   async saveRoute( input: SaveRouteInput, userId: string, ): Promise<RouteType> { 
 
     const vehicle = await this.vehiclesService.createOrFind(
-      { plate: input.vehicle.plate, 
-        brand: input.vehicle.brand, 
-        model: input.vehicle.model, 
-        userId, 
-      });
+    { plate: input.vehicle.plate, 
+      brand: input.vehicle.brand, 
+      model: input.vehicle.model, 
+      userId, 
+    });
 
     return this.routeRepository.saveRoute( input, userId, vehicle.id); 
   }

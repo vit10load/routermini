@@ -3,8 +3,6 @@ import { CalculatedRouteType } from '../types/calculated-route.type';
 import { SaveRouteInput } from '../inputs/save-route.input';
 import { RouteType } from '../types/route.type';
 import { RoutesService } from '../../routes.service';
-
-// import guards in routes operations
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../../../auth/guards/gql-auth.guard';
@@ -13,6 +11,7 @@ import { RouteFilterInput } from '../inputs/route-filter.input';
 @UseGuards(GqlAuthGuard)
 @Resolver()
 export class RoutesResolver {
+  
   constructor(private readonly routesService: RoutesService) { }
 
   @Query(() => String)
